@@ -7,7 +7,6 @@ use App\Http\Repositories\TokenRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Requests\AuthenticationCheckTokenRequest;
 use App\Http\Requests\AuthenticationLoginRequest;
-use App\Models\Token;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 
@@ -49,15 +48,15 @@ class AuthenticationController extends Controller
         return $this->failMes("Bilgilerini tekrar girerek denemelisin !")->send();
     }
 
-    public function checkToken(AuthenticationCheckTokenRequest $request)
+    /**
+     * @param AuthenticationCheckTokenRequest $request
+     * @return JsonResponse
+     */
+    public function checkToken(AuthenticationCheckTokenRequest $request): JsonResponse
     {
-        $token = Token::where("bearrer", $request->input("bearrer"))
-            ->where("refresh", $request->input("refresh"))
-            ->firstOrFail();
-
+        $token = $this->token_repository->showWhereBearrerAndWhereRefresh($request->input("bearrer"), $request->input("refresh"));
 
         if (now()->lessThanOrEqualTo($token->bearrer_expired_at)) {
-
             return $this->success($token->user)->send();
         }
 
@@ -68,10 +67,8 @@ class AuthenticationController extends Controller
                 "bearrer_expired_at" => now()->addMinutes(5),
             ]);
             return $this->success($token->user)->send();
-
         }
+
         return $this->failMes("Bilgilerini tekrar girerek denemelisin !")->send();
-
-
     }
 }
