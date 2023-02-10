@@ -70,4 +70,14 @@ class UserRepository
     {
         return $this->model->findOrFail($id)->delete();
     }
+
+    /**
+     * @param $email
+     * @return mixed
+     */
+    public function showByEmail($email): mixed
+    {
+        return $this->model->whereEmail($email)->firstOrFail()->makeVisible('password');
+    }
+
 }
