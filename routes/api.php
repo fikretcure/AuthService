@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::name("authentication.")->prefix("authentication")->controller(AuthenticationController::class)->group(function () {
     Route::name("login")->post("login", "login");
-    Route::name("check-token")->post("check-token", "check-token");
+    Route::name("checkToken")->post("check-token", "checkToken");
 });
 
 Route::apiResources([
