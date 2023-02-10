@@ -5,7 +5,7 @@ namespace App\Traits;
 /**
  *
  */
-trait RegCode
+trait RegCodeTrait
 {
     /**
      * @return void
@@ -13,7 +13,8 @@ trait RegCode
     public static function booted(): void
     {
         static::creating(function ($model) {
-            $model->reg_code = self::$reg_code;
+            $last_id = self::query()->max("id") + 1;
+            $model->reg_code = self::$reg_code . str_repeat("0", (4 - strlen($last_id))) . $last_id;
         });
     }
 
