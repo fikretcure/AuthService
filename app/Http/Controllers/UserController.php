@@ -6,11 +6,11 @@ use App\Http\Repositories\UserRepository;
 use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 
 /**
  *
+ * @property UserRepository $base_repository
  */
 class UserController extends Controller
 {
@@ -23,7 +23,6 @@ class UserController extends Controller
         $this->base_repository = new UserRepository;
     }
 
-
     /**
      * @return JsonResponse
      */
@@ -31,7 +30,6 @@ class UserController extends Controller
     {
         return $this->success($this->base_repository->index())->send();
     }
-
 
     /**
      * @param UserStoreRequest $request
@@ -42,7 +40,6 @@ class UserController extends Controller
         return $this->success($this->base_repository->store($request->validated()))->send();
     }
 
-
     /**
      * @param $id
      * @return JsonResponse
@@ -52,21 +49,18 @@ class UserController extends Controller
         return $this->success($this->base_repository->show($id))->send();
     }
 
-
-
+    /**
+     * @param UserUpdateRequest $request
+     * @param $id
+     * @return JsonResponse
+     */
     public function update(UserUpdateRequest $request, $id): JsonResponse
     {
-        return $this->success($this->base_repository->update($request->validated(),$id))->send();
-
+        return $this->success($this->base_repository->update($request->validated(), $id))->send();
     }
 
-
-    /**
-     * @param $id
-     * @return void
-     */
-    public function destroy($id): void
+    public function destroy($id): JsonResponse
     {
-        //
+        return $this->success($this->base_repository->destroy($id))->send();
     }
 }
