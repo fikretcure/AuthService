@@ -8,6 +8,8 @@ use App\Traits\RegCodeTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Facades\Hash;
 
 /**
  *
@@ -51,4 +53,43 @@ class User extends Authenticatable
      * @var string
      */
     public static string $reg_code = "K";
+
+    /**
+     * @return string
+     */
+    public function getFullNameAttribute(): string
+    {
+        return $this->name . ' ' . $this->surname;
+    }
+
+    /**
+     * @return Attribute
+     */
+    protected function password(): Attribute
+    {
+        return Attribute::make(
+            set: fn($value) => Hash::make($value),
+        );
+    }
+
+    /**
+     * @return Attribute
+     */
+    protected function name(): Attribute
+    {
+        return Attribute::make(
+            set: fn($value) => str()->title($value),
+        );
+    }
+
+    /**
+     * @return Attribute
+     */
+    protected function surname(): Attribute
+    {
+        return Attribute::make(
+            set: fn($value) => str()->title($value),
+        );
+    }
+
 }
