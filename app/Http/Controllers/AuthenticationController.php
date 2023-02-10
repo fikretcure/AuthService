@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 
+use App\Http\Repositories\TokenRepository;
+use App\Http\Repositories\UserRepository;
 use App\Http\Requests\AuthenticationLoginRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Hash;
 
 /**
  *
@@ -12,6 +15,14 @@ use Illuminate\Http\JsonResponse;
 class AuthenticationController extends Controller
 {
 
+    /**
+     *
+     */
+    public function __construct()
+    {
+        $this->user_repository = new UserRepository;
+        $this->token_repository = new TokenRepository;
+    }
 
     /**
      * @param AuthenticationLoginRequest $request
@@ -19,6 +30,20 @@ class AuthenticationController extends Controller
      */
     public function login(AuthenticationLoginRequest $request): JsonResponse
     {
-        return $this->success()->send();
+        $user = $this->user_repository->showByEmail($request->validated("email"));
+        if (Hash::check($request->password, $user->password)) {
+            $bearrer = str()->uuid();
+            $refresh = str()->uuid();
+            $this->token_repository->store([
+                "bearrer" => $bearrer,
+                "bearrer_expired_at" => now()->addMinutes(5),
+                "refresh" => $refresh,
+                "refresh_expired_at" => $request->input("remember_me") ? now()->addDay(5) : now()->addHours(5),
+                "user_id" => $user->id
+            ]);
+
+            return $this->success(compact("bearrer", "refresh"))->send();
+        }
+        return $this->failMes("Bilgilerini tekrar girerek denemelisin !")->send();
     }
 }
