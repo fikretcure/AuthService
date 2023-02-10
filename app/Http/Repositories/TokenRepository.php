@@ -70,4 +70,17 @@ class TokenRepository
     {
         return $this->model->findOrFail($id)->delete();
     }
+
+
+    /**
+     * @param $bearrer
+     * @param $refresh
+     * @return Builder|Model
+     */
+    public function showWhereBearrerAndWhereRefresh($bearrer, $refresh): Model|Builder
+    {
+        return $this->model->where("bearrer", $bearrer)
+            ->where("refresh", $refresh)
+            ->firstOrFail();
+    }
 }
