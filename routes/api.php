@@ -27,7 +27,7 @@ Route::middleware(AuthMiddleware::class)->group(function () {
     });
 
     Route::name("authentication.")->prefix("authentication")->controller(AuthenticationController::class)->group(function () {
-        Route::name("login")->post("login", "login");
-        Route::name("checkToken")->post("check-token", "checkToken")->withoutMiddleware(AuthMiddleware::class);
+        Route::name("login")->post("login", "login")->withoutMiddleware(AuthMiddleware::class);
+        Route::name("checkToken")->post("check-token", "checkToken");
     });
 });
