@@ -9,6 +9,7 @@ use App\Traits\ResponseTrait;
 use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -20,7 +21,6 @@ class AuthMiddleware
 {
     use ResponseTrait;
 
-
     /**
      *
      */
@@ -28,7 +28,6 @@ class AuthMiddleware
     {
         $this->token_repository = new TokenRepository;
     }
-
 
     /**
      * @param Request $request
@@ -60,6 +59,7 @@ class AuthMiddleware
 
         if (now()->lessThanOrEqualTo($token->bearrer_expired_at)) {
             $request_merge->handle($request->header("bearrer"), $request->header("refresh"));
+            Auth::loginUsingId($token->user_id);
 
             return $next($request);
         }
@@ -71,6 +71,7 @@ class AuthMiddleware
                 "bearrer_expired_at" => now()->addMinutes(5),
             ]);
             $request_merge->handle($bearrer, $request->header("refresh"));
+            Auth::loginUsingId($token->user_id);
 
             return $next($request);
         }
