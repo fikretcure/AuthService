@@ -83,4 +83,12 @@ class TokenRepository
             ->where("refresh", $refresh)
             ->firstOrFail();
     }
+
+    /**
+     * @return void
+     */
+    public function deleteWhereRefreshExpiredAt(): void
+    {
+        $this->model->where("refresh_expired_at", "<", now())->delete();
+    }
 }
