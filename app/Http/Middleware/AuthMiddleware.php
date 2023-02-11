@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Helpers\RequestMergeHelper;
 use App\Http\Repositories\TokenRepository;
 use App\Models\Token;
 use App\Traits\ResponseTrait;
@@ -37,6 +38,8 @@ class AuthMiddleware
      */
     public function handle(Request $request, Closure $next): mixed
     {
+        $request_merge = new RequestMergeHelper();
+
         $validator = Validator::make(getallheaders(), [
             "bearrer" => [
                 "required",
@@ -56,11 +59,8 @@ class AuthMiddleware
         $token = $this->token_repository->showWhereBearrerAndWhereRefresh($request->header("bearrer"), $request->header("refresh"));
 
         if (now()->lessThanOrEqualTo($token->bearrer_expired_at)) {
+            $request_merge->handle($request->header("bearrer"), $request->header("refresh"));
 
-            $request->merge([
-                "bearrer" => $request->header("bearrer"),
-                "refresh" => $request->header("refresh"),
-            ]);
             return $next($request);
         }
 
@@ -70,10 +70,8 @@ class AuthMiddleware
                 "bearrer" => $bearrer,
                 "bearrer_expired_at" => now()->addMinutes(5),
             ]);
-            $request->merge([
-                "bearrer" => $bearrer,
-                "refresh" => $request->header("refresh"),
-            ]);
+            $request_merge->handle($bearrer, $request->header("refresh"));
+
             return $next($request);
         }
         return $this->failMes("Bilgilerini tekrar girerek denemelisin !")->send();
