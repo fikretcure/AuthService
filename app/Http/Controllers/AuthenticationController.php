@@ -43,6 +43,11 @@ class AuthenticationController extends Controller
                 "user_id" => $user->id
             ]);
 
+            $request->merge([
+                "bearrer" =>$bearrer,
+                "refresh" =>$refresh,
+            ]);
+
             return $this->success(compact("bearrer", "refresh"))->send();
         }
         return $this->failMes("Bilgilerini tekrar girerek denemelisin !")->send();
