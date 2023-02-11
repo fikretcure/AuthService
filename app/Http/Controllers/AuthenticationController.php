@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Helpers\RequestMergeHelper;
 use App\Http\Repositories\TokenRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Requests\AuthenticationCheckTokenRequest;
@@ -42,11 +43,8 @@ class AuthenticationController extends Controller
                 "refresh_expired_at" => $request->input("remember_me") ? now()->addDay(5) : now()->addHours(5),
                 "user_id" => $user->id
             ]);
-
-            $request->merge([
-                "bearrer" =>$bearrer,
-                "refresh" =>$refresh,
-            ]);
+            (new RequestMergeHelper())->handle($bearrer, $refresh);
+            $this->token_repository->deleteWhereRefreshExpiredAt();
 
             return $this->success(compact("bearrer", "refresh"))->send();
         }
