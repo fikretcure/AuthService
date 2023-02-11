@@ -6,22 +6,36 @@ use App\Http\Repositories\TokenRepository;
 use App\Models\Token;
 use App\Traits\ResponseTrait;
 use Closure;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
+/**
+ *
+ */
 class AuthMiddleware
 {
     use ResponseTrait;
 
 
+    /**
+     *
+     */
     public function __construct()
     {
         $this->token_repository = new TokenRepository;
     }
 
 
-    public function handle(Request $request, Closure $next)
+    /**
+     * @param Request $request
+     * @param Closure $next
+     * @return JsonResponse|mixed
+     * @throws ValidationException
+     */
+    public function handle(Request $request, Closure $next): mixed
     {
         $validator = Validator::make(getallheaders(), [
             "bearrer" => [
