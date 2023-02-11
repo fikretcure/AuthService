@@ -16,11 +16,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::name("users.store")->post("users", [UserController::class, "store"]);
-
 Route::middleware(AuthMiddleware::class)->group(function () {
     Route::name("users.")->prefix("users")->controller(UserController::class)->group(function () {
         Route::name("index")->get(null, "index");
+        Route::name("store")->post(null, "store")->withoutMiddleware(AuthMiddleware::class);
         Route::name("show")->get("{id}", "show");
         Route::name("update")->put("{id}", "update");
         Route::name("destroy")->delete("{id}", "destroy");
