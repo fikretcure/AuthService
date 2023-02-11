@@ -56,6 +56,6 @@ class AuthenticationController extends Controller
      */
     public function show(): JsonResponse
     {
-        return $this->success($this->user_repository->show(Auth::id()))->send();
+        return $this->success(Auth::user())->send();
     }
 }
