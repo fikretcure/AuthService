@@ -6,9 +6,9 @@ namespace App\Http\Controllers;
 use App\Helpers\RequestMergeHelper;
 use App\Http\Repositories\TokenRepository;
 use App\Http\Repositories\UserRepository;
-use App\Http\Requests\AuthenticationCheckTokenRequest;
 use App\Http\Requests\AuthenticationLoginRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -52,26 +52,10 @@ class AuthenticationController extends Controller
     }
 
     /**
-     * @param AuthenticationCheckTokenRequest $request
      * @return JsonResponse
      */
-    public function checkToken(AuthenticationCheckTokenRequest $request): JsonResponse
+    public function show(): JsonResponse
     {
-        $token = $this->token_repository->showWhereBearrerAndWhereRefresh($request->input("bearrer"), $request->input("refresh"));
-
-        if (now()->lessThanOrEqualTo($token->bearrer_expired_at)) {
-            return $this->success($token->user)->send();
-        }
-
-        if (now()->lessThanOrEqualTo($token->refresh_expired_at)) {
-            $bearrer = str()->uuid();
-            $token->update([
-                "bearrer" => $bearrer,
-                "bearrer_expired_at" => now()->addMinutes(5),
-            ]);
-            return $this->success($token->user)->send();
-        }
-
-        return $this->failMes("Bilgilerini tekrar girerek denemelisin !")->send();
+        return $this->success($this->user_repository->show(Auth::id()))->send();
     }
 }
