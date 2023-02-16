@@ -19,14 +19,15 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(AuthMiddleware::class)->group(function () {
     Route::name("users.")->prefix("users")->controller(UserController::class)->group(function () {
         Route::name("index")->get(null, "index");
-        Route::name("store")->post(null, "store")->withoutMiddleware(AuthMiddleware::class);
         Route::name("show")->get("{id}", "show");
         Route::name("update")->put("{id}", "update");
         Route::name("destroy")->delete("{id}", "destroy");
     });
 
     Route::name("authentication.")->prefix("authentication")->controller(AuthenticationController::class)->group(function () {
-        Route::name("login")->post("login", "login")->withoutMiddleware(AuthMiddleware::class);
         Route::name("show")->get("show", "show");
     });
 });
+
+Route::name("users.store")->post(null, [UserController::class, "store"]);
+Route::name("authentication.login")->post("authentication/login", [AuthenticationController::class, "login"]);
