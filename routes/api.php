@@ -29,5 +29,5 @@ Route::middleware(AuthMiddleware::class)->group(function () {
     });
 });
 
-Route::name("users.store")->post(null, [UserController::class, "store"]);
+Route::name("users.store")->post("users", [UserController::class, "store"]);
 Route::name("authentication.login")->post("authentication/login", [AuthenticationController::class, "login"]);
