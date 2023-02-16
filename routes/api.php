@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AuthMiddleware;
+use App\Http\Middleware\GatewayMiddleware;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(AuthMiddleware::class)->group(function () {
+Route::middleware(GatewayMiddleware::class)->group(function () {
     Route::name("users.")->prefix("users")->controller(UserController::class)->group(function () {
         Route::name("index")->get(null, "index");
         Route::name("show")->get("{id}", "show");
